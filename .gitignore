@@ -1,3 +1,18 @@
+<<<<<<< HEAD
 ./node_modules
 node_modules/
 .env
+=======
+# dependencies
+/node_modules
+
+# build output
+/build
+
+# local env files
+.env
+
+# misc
+.DS_Store
+*.log
+>>>>>>> 91007e84647c99205aa3da86e7d19a96dc48cc9c
