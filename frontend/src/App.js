@@ -1,12 +1,15 @@
-import React from 'react';
-import BackendTest from './components/BackendTest';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Register from './pages/Register';
+import Login from './pages/Login';
 
 function App() {
   return (
-    <div className="App">
-      <h2>CareerPath Navigator</h2>
-      <BackendTest />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
   );
 }
 
