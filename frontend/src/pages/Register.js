@@ -1,6 +1,8 @@
-// src/pages/Register.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './RegStyle.css';
+import Lottie from 'lottie-react';
+import rocketAnimation from '../assets/rocket.json'; // Replace with your chosen animation
 
 const Register = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
@@ -18,15 +20,45 @@ const Register = () => {
     }
   };
 
+  useEffect(() => {
+    const card = document.querySelector('.glass-card');
+    card.classList.add('animate-entrance');
+  }, []);
+
   return (
-    <form onSubmit={handleSubmit} className="p-4">
-      <h2>Register</h2>
-      <input name="name" placeholder="Name" onChange={handleChange} className="form-control mb-2" />
-      <input name="email" type="email" placeholder="Email" onChange={handleChange} className="form-control mb-2" />
-      <input name="password" type="password" placeholder="Password" onChange={handleChange} className="form-control mb-2" />
-      <button type="submit" className="btn btn-primary">Register</button>
-      <p>{message}</p>
-    </form>
+    <div className="register-page">
+      <Lottie animationData={rocketAnimation} className="rocket" loop autoplay />
+      <div className="glass-card">
+        <h2>Join the Journey</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            name="name"
+            placeholder="Name"
+            onChange={handleChange}
+            className="glass-input"
+            required
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            onChange={handleChange}
+            className="glass-input"
+            required
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            onChange={handleChange}
+            className="glass-input"
+            required
+          />
+          <button type="submit" className="glass-button">Register</button>
+          <p>{message}</p>
+        </form>
+      </div>
+    </div>
   );
 };
 
