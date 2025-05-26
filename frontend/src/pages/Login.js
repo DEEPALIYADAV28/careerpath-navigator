@@ -1,45 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './AuthStyle.css';
-import Lottie from 'lottie-react';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import "./AuthStyle.css";
+import Lottie from "lottie-react";
 
 // Lottie animation files
-import mascotAnimation from '../assets/mascot.json';      // existing mascot (right)
-import mascot2Animation from '../assets/mascot2.json';    // new mascot (left)
+import mascotAnimation from "../assets/mascot.json"; // existing mascot (right)
+import mascot2Animation from "../assets/mascot2.json"; // new mascot (left)
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [message, setMessage] = useState('');
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [message, setMessage] = useState("");
   const [rippleStyle, setRippleStyle] = useState({});
   const [showRipple, setShowRipple] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleChange = e =>
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
+    if (formData.email.includes("@gmil.com")) {
+      setMessage("Did you mean '@gmail.com'? Please correct your email.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await axios.post('http://localhost:5000/api/login', formData);
-      localStorage.setItem('token', res.data.token);
+      const res = await axios.post("http://localhost:5000/api/login", formData);
+      localStorage.setItem("token", res.data.token);
       setMessage(`Welcome ${res.data.user.name}`);
+      setTimeout(() => navigate("/"), 1500);
     } catch (err) {
-      setMessage(err.response?.data?.message || 'Error');
+      setMessage(err.response?.data?.message || "Error");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleRipple = e => {
+  const handleRipple = (e) => {
     const rect = e.target.getBoundingClientRect();
     setRippleStyle({
-      left: e.clientX - rect.left + 'px',
-      top: e.clientY - rect.top + 'px'
+      left: e.clientX - rect.left + "px",
+      top: e.clientY - rect.top + "px",
     });
     setShowRipple(true);
     setTimeout(() => setShowRipple(false), 600);
   };
 
   useEffect(() => {
-    const card = document.querySelector('.neumorphic-card');
-    card.classList.add('animate-entrance');
+    const card = document.querySelector(".neumorphic-card");
+    if (card) {
+      card.classList.add("animate-entrance");
+    }
   }, []);
 
   return (
@@ -76,9 +92,10 @@ const Login = () => {
             type="submit"
             className="neumorphic neumorphic-button"
             onClick={handleRipple}
+            disabled={loading}
           >
             {showRipple && <span className="ripple" style={rippleStyle}></span>}
-            Login
+            {loading ? "Loading..." : "Login"}
           </button>
           {message && <p className="message">{message}</p>}
         </form>
