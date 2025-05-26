@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 exports.registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password,role } = req.body;
 
   // Reject common email typo
   if (email.includes("@gmil.com")) {
@@ -11,6 +11,12 @@ exports.registerUser = async (req, res) => {
       message: "Invalid email domain. Did you mean '@gmail.com'?",
     });
   }
+    // Basic role validation
+  const allowedRoles = ["student", "mentor", "contributor"];
+  if (!allowedRoles.includes(role)) {
+    return res.status(400).json({ message: "Invalid role selected." });
+  }
+
 
   try {
     const existing = await User.findOne({ email });

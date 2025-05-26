@@ -4,9 +4,11 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, default: "student" }, // student, mentor, admin
-  stream: String,
-  interests: [String],
+  role: {
+    type: String,
+    enum: ["student", "mentor", "contributor", "admin"], // enforce allowed roles
+    default: "student"
+    },
 });
 
 module.exports = mongoose.model("User", userSchema);

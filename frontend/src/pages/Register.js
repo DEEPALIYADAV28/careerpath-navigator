@@ -10,6 +10,7 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
+    role: "", // added role field
   });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,9 +23,14 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Check for common typo in email
     if (formData.email.includes("@gmil.com")) {
       setMessage("Did you mean '@gmail.com'? Please correct your email.");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.role) {
+      setMessage("Please select a role.");
       setLoading(false);
       return;
     }
@@ -35,7 +41,6 @@ const Register = () => {
         formData
       );
       setMessage(res.data.message);
-      // Redirect to login page after successful registration
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setMessage(err.response?.data?.message || "Error");
@@ -85,6 +90,17 @@ const Register = () => {
             className="glass-input"
             required
           />
+          <select
+            name="role"
+            onChange={handleChange}
+            className="glass-input"
+            required
+          >
+            <option value="">Select Role</option>
+            <option value="student">Student</option>
+            <option value="mentor">Mentor</option>
+            <option value="contributor">Contributor</option>
+          </select>
           <button type="submit" className="glass-button" disabled={loading}>
             {loading ? "Loading..." : "Register"}
           </button>
