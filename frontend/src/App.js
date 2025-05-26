@@ -11,7 +11,7 @@ import Navbar from "./components/Navbar";
 import StudentModel from "./StudentModel";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import Explore from "./pages/Explore"; // ✅ Import Explore page
+import ExplorePage from "./pages/ExplorePage"; // ✅ Import Explore page
 
 // ✅ Homepage component with Get Started navigation
 function HomePage() {
@@ -48,7 +48,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/explore" element={<Explore />} /> {/* ✅ Explore route */}
+        <Route path="/explore" element={<ExplorePage />} />{" "}
+        {/* ✅ Explore route */}
       </Routes>
     </Router>
   );
