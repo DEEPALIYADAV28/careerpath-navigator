@@ -18,8 +18,6 @@ import MentorDashboard from "./pages/MentorDashboard";
 import ContributorDashboard from "./pages/ContributorDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-
-
 // ✅ Homepage component with Get Started navigation
 function HomePage() {
   const navigate = useNavigate();
