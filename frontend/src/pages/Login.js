@@ -32,8 +32,13 @@ const Login = () => {
     try {
       const res = await axios.post("http://localhost:5000/api/login", formData);
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.user.role);
+
       setMessage(`Welcome ${res.data.user.name}`);
-      setTimeout(() => navigate("/"), 1500);
+      const userRole = res.data.user.role;
+      setTimeout(() => {
+        navigate(`/quiz/${userRole }`);
+      }, 1500);
     } catch (err) {
       setMessage(err.response?.data?.message || "Error");
     } finally {

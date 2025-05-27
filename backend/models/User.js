@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
     enum: ["student", "mentor", "contributor", "admin"], // enforce allowed roles
     default: "student"
     },
+  quizAnswers:{
+    type:Object,
+    default:{}
+  }
 });
 
 module.exports = mongoose.model("User", userSchema);

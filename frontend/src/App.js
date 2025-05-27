@@ -11,14 +11,21 @@ import Navbar from "./components/Navbar";
 import StudentModel from "./StudentModel";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import ExplorePage from "./pages/ExplorePage"; // ✅ Import Explore page
+import ExplorePage from "./pages/ExplorePage";
+import QuizPage from "./pages/QuizPage";
+import StudentDashboard from "./pages/StudentDashboard";
+import MentorDashboard from "./pages/MentorDashboard";
+import ContributorDashboard from "./pages/ContributorDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+
 
 // ✅ Homepage component with Get Started navigation
 function HomePage() {
-  const navigate = useNavigate(); // React Router hook to navigate
+  const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    navigate("/explore"); // Navigate to Explore page
+    navigate("/explore");
   };
 
   return (
@@ -48,8 +55,33 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/explore" element={<ExplorePage />} />{" "}
-        {/* ✅ Explore route */}
+        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/quiz/:role" element={<QuizPage />} />
+
+        <Route
+          path="/dashboard/student"
+          element={
+            <ProtectedRoute>
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/mentor"
+          element={
+            <ProtectedRoute>
+              <MentorDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/contributor"
+          element={
+            <ProtectedRoute>
+              <ContributorDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

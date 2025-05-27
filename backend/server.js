@@ -6,6 +6,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const careerRoutes = require("./routes/careerRoutes");
 const dashboardRoutes=require('./routes/dashboard');
+const userRoutes=require('./routes/user');
 
 
 const app = express();
@@ -16,6 +17,8 @@ app.use(express.json());
 app.use('/api',dashboardRoutes);
 app.use("/api", authRoutes);
 app.use("/api/careers", careerRoutes);
+app.use('/api', userRoutes);
+
 
 app.get("/api/test", (req, res) => {
   res.send("API is working");
