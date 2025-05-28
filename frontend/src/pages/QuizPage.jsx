@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useNavigate, useParams } from "react-router-dom";
 import "./QuizPage.css";
 
 const quizData = [
@@ -33,6 +34,8 @@ const quizData = [
 const QuizPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
+  const navigate = useNavigate();
+  const { role } = useParams();
 
   const questionCount = quizData.length;
   const progressPercent = ((currentStep + 1) / questionCount) * 100;
@@ -42,13 +45,22 @@ const QuizPage = () => {
   };
 
   const handleNext = () => {
-    if (selectedOption === null) return; // prevent next without answer
+    if (selectedOption === null) return;
+
     if (currentStep < questionCount - 1) {
       setCurrentStep(currentStep + 1);
       setSelectedOption(null);
     } else {
-      alert("Quiz finished!");
-      // TODO: show results or redirect
+      // ✅ Redirect based on role
+      if (role === "student") {
+        navigate("/dashboard/student");
+      } else if (role === "mentor") {
+        navigate("/dashboard/mentor");
+      } else if (role === "contributor") {
+        navigate("/dashboard/contributor");
+      } else {
+        alert("Invalid role. Cannot redirect to dashboard.");
+      }
     }
   };
 
@@ -62,7 +74,7 @@ const QuizPage = () => {
           />
         </div>
 
-        <AnimatePresence exitBeforeEnter>
+        <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
             initial={{ opacity: 0, y: 50 }}
@@ -71,7 +83,9 @@ const QuizPage = () => {
             transition={{ duration: 0.5 }}
             className="motion-wrapper"
           >
-            <div className="question-text">{quizData[currentStep].question}</div>
+            <div className="question-text">
+              {quizData[currentStep].question}
+            </div>
 
             <div className="options-container">
               {quizData[currentStep].options.map((option, idx) => (
