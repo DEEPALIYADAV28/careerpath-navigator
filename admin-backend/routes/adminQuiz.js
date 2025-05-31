@@ -53,5 +53,24 @@ router.get("/:role", async (req, res) => {
     res.status(500).json({ message: "Fetch error" });
   }
 });
+ 
+// Get quiz statistics
+router.get("/stats", verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const quizzes = await Quiz.find({});
+    const totalQuizzes = quizzes.length;
+    const rolesCovered = [...new Set(quizzes.map(q => q.role))];
+    const totalQuestions = quizzes.reduce((sum, quiz) => sum + quiz.questions.length, 0);
+
+    res.json({
+      totalQuizzes,
+      rolesCovered,
+      totalQuestions,
+    });
+  } catch (err) {
+    console.error("Error fetching stats:", err);
+    res.status(500).json({ message: "Failed to fetch stats" });
+  }
+});
 
 module.exports = router;
