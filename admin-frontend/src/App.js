@@ -1,4 +1,3 @@
-// src/App.js
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -22,14 +21,13 @@ import "react-toastify/dist/ReactToastify.css";
 // Header with Logout Button
 const Header = () => {
   const navigate = useNavigate();
+  const isLoggedIn = localStorage.getItem("adminToken");
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("role");
     navigate("/login");
   };
-
-  const isLoggedIn = localStorage.getItem("adminToken");
 
   return (
     <header className="admin-header" style={styles.header}>
@@ -43,7 +41,7 @@ const Header = () => {
   );
 };
 
-// Layout wrapper for pages that need sidebar
+// Layout wrapper for pages with sidebar
 const AdminLayout = ({ children }) => (
   <div style={{ display: "flex", minHeight: "100vh" }}>
     <Sidebar />
@@ -58,11 +56,13 @@ function App() {
         <Header />
 
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+          {/* Default redirect to /login */}
+          <Route path="/" element={<Navigate to="/login" />} />
+
           <Route path="/login" element={<AdminLogin />} />
           <Route path="/register" element={<AdminRegister />} />
 
-          {/* ✅ Protected Routes with Sidebar */}
+          {/* Protected Routes with Layout */}
           <Route
             path="/dashboard"
             element={
@@ -94,11 +94,14 @@ function App() {
             }
           />
 
-          {/* Unauthorized Access Page */}
+          {/* Unauthorized access route */}
           <Route
             path="/unauthorized"
             element={<h2 style={{ padding: "2rem" }}>🚫 Access Denied</h2>}
           />
+
+          {/* Catch-all fallback */}
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
 
         <ToastContainer />

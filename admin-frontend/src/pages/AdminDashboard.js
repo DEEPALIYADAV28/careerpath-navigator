@@ -9,9 +9,12 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5001/api/admin/quiz/stats", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          "http://localhost:5001/api/admin/quiz/stats",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setStats(res.data);
       } catch (err) {
         console.error("Error fetching stats:", err);
@@ -39,13 +42,15 @@ const AdminDashboard = () => {
 };
 
 const Card = ({ title, value }) => (
-  <div style={{
-    padding: "1rem",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    width: "200px",
-    background: "#fff"
-  }}>
+  <div
+    style={{
+      padding: "1rem",
+      border: "1px solid #ddd",
+      borderRadius: "8px",
+      width: "200px",
+      background: "#fff",
+    }}
+  >
     <h4>{title}</h4>
     <p style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{value}</p>
   </div>
