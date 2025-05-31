@@ -10,19 +10,24 @@ exports.adminLogin = async (req, res) => {
     if (!admin) return res.status(401).json({ message: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+    if (!isMatch)
+      return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: admin._id, role: admin.role }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { id: admin._id, role: admin.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
 
     res.json({
       token,
       admin: {
         id: admin._id,
         email: admin.email,
-        role: admin.role
-      }
+        role: admin.role,
+      },
     });
   } catch (err) {
     console.error("Admin login error:", err);
@@ -35,7 +40,8 @@ exports.adminRegister = async (req, res) => {
   const { email, password } = req.body;
   try {
     const existing = await Admin.findOne({ email });
-    if (existing) return res.status(400).json({ message: "Admin already exists" });
+    if (existing)
+      return res.status(400).json({ message: "Admin already exists" });
 
     const hash = await bcrypt.hash(password, 10);
     const newAdmin = new Admin({ email, password: hash });

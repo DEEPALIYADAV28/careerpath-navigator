@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 
 import AdminLogin from "./pages/AdminLogin";
+import AdminRegister from "./pages/AdminRegister";
 import AdminQuizEditor from "./pages/AdminQuizEditor";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminAnalytics from "./pages/AdminAnalytics";
@@ -23,12 +24,12 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("adminToken");
     localStorage.removeItem("role");
     navigate("/login");
   };
 
-  const isLoggedIn = localStorage.getItem("token");
+  const isLoggedIn = localStorage.getItem("adminToken");
 
   return (
     <header className="admin-header" style={styles.header}>
@@ -44,9 +45,9 @@ const Header = () => {
 
 // Layout wrapper for pages that need sidebar
 const AdminLayout = ({ children }) => (
-  <div style={{ display: "flex" }}>
+  <div style={{ display: "flex", minHeight: "100vh" }}>
     <Sidebar />
-    <main style={{ flexGrow: 1 }}>{children}</main>
+    <main style={{ flexGrow: 1, padding: "1rem" }}>{children}</main>
   </div>
 );
 
@@ -59,6 +60,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="/login" element={<AdminLogin />} />
+          <Route path="/register" element={<AdminRegister />} />
 
           {/* ✅ Protected Routes with Sidebar */}
           <Route

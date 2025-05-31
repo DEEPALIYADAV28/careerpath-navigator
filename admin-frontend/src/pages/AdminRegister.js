@@ -1,39 +1,44 @@
-// src/pages/AdminLogin.js
+// src/pages/AdminRegister.js
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const AdminLogin = () => {
+const AdminRegister = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
     try {
-      const res = await axios.post("http://localhost:5001/api/admin/login", {
+      const res = await axios.post("http://localhost:5001/api/admin/register", {
         email,
         password,
       });
 
-      // Save token as "token" for ProtectedRoute compatibility
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", "admin");
-
-      toast.success("Login successful!");
-      navigate("/dashboard");
+      toast.success("Registration successful! Please login.");
+      navigate("/login");
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Login failed. Please try again."
+        error.response?.data?.message ||
+          "Registration failed. Please try again."
       );
     }
   };
 
   return (
-    <div className="login-container" style={styles.container}>
+    <div style={styles.container}>
       <form onSubmit={handleSubmit} style={styles.form}>
-        <h2 style={styles.heading}>Admin Login</h2>
+        <h2 style={styles.heading}>Admin Register</h2>
+
         <input
           type="email"
           placeholder="Email"
@@ -42,6 +47,7 @@ const AdminLogin = () => {
           style={styles.input}
           required
         />
+
         <input
           type="password"
           placeholder="Password"
@@ -49,14 +55,27 @@ const AdminLogin = () => {
           onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
           required
+          minLength={6}
         />
+
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          style={styles.input}
+          required
+          minLength={6}
+        />
+
         <button type="submit" style={styles.button}>
-          Login
+          Register
         </button>
-        <p style={styles.registerText}>
-          Don't have an account?{" "}
-          <Link to="/register" style={styles.registerLink}>
-            Register here
+
+        <p style={styles.text}>
+          Already have an account?{" "}
+          <Link to="/login" style={styles.link}>
+            Login here
           </Link>
         </p>
       </form>
@@ -98,16 +117,16 @@ const styles = {
     borderRadius: "4px",
     cursor: "pointer",
   },
-  registerText: {
+  text: {
     marginTop: "1rem",
     textAlign: "center",
     fontSize: "0.9rem",
   },
-  registerLink: {
+  link: {
     color: "#0b3d91",
-    textDecoration: "none",
-    fontWeight: "bold",
+    textDecoration: "underline",
+    cursor: "pointer",
   },
 };
 
-export default AdminLogin;
+export default AdminRegister;
