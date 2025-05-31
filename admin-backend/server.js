@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
+const adminAuthRoutes = require("./routes/adminAuth");
 const quizRoutes = require("./routes/adminQuiz");
 
 const app = express();
@@ -12,7 +13,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/admin/quiz", quizRoutes);
+app.use("/api/admin", adminAuthRoutes);
+ app.use("/api/admin/quiz", quizRoutes);
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI, {
