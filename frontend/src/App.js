@@ -6,9 +6,9 @@ import {
   useNavigate,
 } from "react-router-dom";
 import "./App.css";
+import StudentModel from "./StudentModel";
 
 import Navbar from "./components/Navbar";
-import StudentModel from "./StudentModel";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ExplorePage from "./pages/ExplorePage";
@@ -16,24 +16,20 @@ import QuizPage from "./pages/QuizPage";
 import StudentDashboard from "./pages/StudentDashboard";
 import MentorDashboard from "./pages/MentorDashboard";
 import ContributorDashboard from "./pages/ContributorDashboard";
+import Contact from "./pages/Contact";
+import CareerTestPage from "./pages/CareerTestPage";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 
-// ✅ Homepage component with Get Started navigation
 function HomePage() {
   const navigate = useNavigate();
-
-  const handleGetStarted = () => {
-    navigate("/explore");
-  };
-
   return (
     <div className="app">
-      <Navbar />
       <div className="main-section">
         <div className="left-content">
           <h1>Find Your Perfect Career Path</h1>
-          <p>Discover your strengths.....</p>
-          <button className="cta-button" onClick={handleGetStarted}>
+          <p>Discover your strengths and unlock your potential!</p>
+          <button className="cta-button" onClick={() => navigate("/explore")}>
             Get Started
           </button>
         </div>
@@ -45,17 +41,18 @@ function HomePage() {
   );
 }
 
-// ✅ App entry component with router
 function App() {
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/quiz/:role" element={<QuizPage />} />
-
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/career" element={<CareerTestPage />} /> {/* Fixed path */}
         <Route
           path="/dashboard/student"
           element={
