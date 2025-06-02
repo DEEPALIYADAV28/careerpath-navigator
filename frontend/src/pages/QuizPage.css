@@ -90,10 +90,14 @@
 
 /* Options container grid */
 .options-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 10px;
 }
+
 
 /* Option styling */
 .option {
