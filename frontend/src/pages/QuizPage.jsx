@@ -1,77 +1,99 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import "./QuizPage.css";
 
-const quizData = [
-  {
-    question: "Which language is used for web apps?",
-    options: ["Python", "JavaScript", "C++", "Java"],
-  },
-  {
-    question: "What does CSS stand for?",
-    options: [
-      "Cascading Style Sheets",
-      "Computer Style Sheets",
-      "Creative Style System",
-      "Colorful Style Sheets",
-    ],
-  },
-  {
-    question: "React is developed by?",
-    options: ["Google", "Facebook", "Microsoft", "Amazon"],
-  },
-  {
-    question: "What is your favorite programming language?",
-    options: ["JavaScript", "Python", "Java", "C++"],
-  },
-  {
-    question: "Which framework do you prefer?",
-    options: ["React", "Angular", "Vue", "Svelte"],
-  },
-];
-
 const QuizPage = () => {
+  const [quizData, setQuizData] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState([]);
+  const [answers, setAnswers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [customInput, setCustomInput] = useState("");
+
   const navigate = useNavigate();
   const { role } = useParams();
 
-  const questionCount = quizData.length;
-  const progressPercent = ((currentStep + 1) / questionCount) * 100;
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5001/api/admin/quiz/${role}`);
+        setQuizData(res.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Failed to load quiz:", err);
+        alert("Unable to load quiz. Please try again.");
+      }
+    };
+
+    fetchQuiz();
+  }, [role]);
+
+  const currentQuestion = quizData[currentStep];
+  const isMultiSelect = currentQuestion?.question?.toLowerCase().includes("career");
 
   const handleOptionClick = (idx) => {
-    setSelectedOption(idx);
+    const isOther = quizData[currentStep].options[idx].toLowerCase().includes("other");
+
+    if (isMultiSelect) {
+      if (selectedOption.includes(idx)) {
+        setSelectedOption(selectedOption.filter(i => i !== idx));
+      } else {
+        setSelectedOption([...selectedOption, idx]);
+      }
+    } else {
+      setSelectedOption([idx]); // make it an array for consistency
+    }
+
+    if (isOther) {
+      setCustomInput(""); // Reset input
+    }
   };
 
-  const handleNext = () => {
-    if (selectedOption === null) return;
+  const handleNext = async () => {
+    if (selectedOption.length === 0) return;
 
-    if (currentStep < questionCount - 1) {
+    let selectedAnswers = selectedOption.map(i => currentQuestion.options[i]);
+
+    // ✅ Append custom input if "Other" was selected
+    const includesOther = selectedAnswers.some(ans => ans.toLowerCase().includes("other"));
+    if (includesOther && customInput.trim()) {
+      selectedAnswers = selectedAnswers.filter(ans => !ans.toLowerCase().includes("other"));
+      selectedAnswers.push(customInput.trim());
+    }
+
+    const updatedAnswers = [...answers, selectedAnswers];
+    setAnswers(updatedAnswers);
+
+    if (currentStep < quizData.length - 1) {
       setCurrentStep(currentStep + 1);
-      setSelectedOption(null);
+      setSelectedOption([]);
+      setCustomInput(""); // reset for next question
     } else {
-      // ✅ Redirect based on role
-      if (role === "student") {
-        navigate("/dashboard/student");
-      } else if (role === "mentor") {
-        navigate("/dashboard/mentor");
-      } else if (role === "contributor") {
-        navigate("/dashboard/contributor");
-      } else {
-        alert("Invalid role. Cannot redirect to dashboard.");
+      try {
+        const token = localStorage.getItem("token");
+        const flattened = updatedAnswers.flat();
+        await axios.patch("http://localhost:5000/api/user/quiz", { answers: flattened }, {
+          headers: { Authorization: token },
+        });
+        navigate(`/dashboard/${role}`);
+      } catch (err) {
+        console.error("Quiz submission failed:", err);
+        alert("Something went wrong while submitting your quiz.");
       }
     }
   };
+
+  if (loading) return <p className="loading">Loading quiz...</p>;
+
+  const progressPercent = ((currentStep + 1) / quizData.length) * 100;
 
   return (
     <div className="quiz-container">
       <div className="quiz-card">
         <div className="progress-bar-container">
-          <div
-            className="progress-bar-fill"
-            style={{ width: `${progressPercent}%` }}
-          />
+          <div className="progress-bar-fill" style={{ width: `${progressPercent}%` }} />
         </div>
 
         <AnimatePresence mode="wait">
@@ -83,17 +105,13 @@ const QuizPage = () => {
             transition={{ duration: 0.5 }}
             className="motion-wrapper"
           >
-            <div className="question-text">
-              {quizData[currentStep].question}
-            </div>
+            <div className="question-text">{currentQuestion.question}</div>
 
             <div className="options-container">
-              {quizData[currentStep].options.map((option, idx) => (
+              {currentQuestion.options.map((option, idx) => (
                 <motion.div
                   key={idx}
-                  className={`option ${
-                    selectedOption === idx ? "selected" : ""
-                  }`}
+                  className={`option ${selectedOption.includes(idx) ? "selected" : ""}`}
                   whileHover={{ scale: 1.05, boxShadow: "0 0 12px #4caf50" }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleOptionClick(idx)}
@@ -105,17 +123,31 @@ const QuizPage = () => {
                   {option}
                 </motion.div>
               ))}
+
+              {selectedOption.some(i =>
+                currentQuestion.options[i].toLowerCase().includes("other")
+              ) && (
+                <input
+                  type="text"
+                  value={customInput}
+                  onChange={(e) => setCustomInput(e.target.value)}
+                  placeholder="Please specify your option..."
+                  className="neumorphic neumorphic-input"
+                  style={{ marginTop: "1rem", padding: "12px", borderRadius: "10px", border: "1px solid #ccc" }}
+                  required
+                />
+              )}
             </div>
+
+            <button
+              onClick={handleNext}
+              disabled={selectedOption.length === 0}
+              className="next-button"
+            >
+              {currentStep === quizData.length - 1 ? "Finish" : "Next"}
+            </button>
           </motion.div>
         </AnimatePresence>
-
-        <button
-          onClick={handleNext}
-          disabled={selectedOption === null}
-          className="next-button"
-        >
-          {currentStep === questionCount - 1 ? "Finish" : "Next"}
-        </button>
       </div>
     </div>
   );
