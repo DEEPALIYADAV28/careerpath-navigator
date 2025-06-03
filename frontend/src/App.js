@@ -1,45 +1,22 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useNavigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
-import StudentModel from "./StudentModel";
 
 import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+import HomePage from "./pages/HomePage";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ExplorePage from "./pages/ExplorePage";
 import QuizPage from "./pages/QuizPage";
+import Contact from "./pages/Contact";
+import CareerTestPage from "./pages/CareerTestPage";
+import Programs from "./pages/Programs";
+
 import StudentDashboard from "./pages/StudentDashboard";
 import MentorDashboard from "./pages/MentorDashboard";
 import ContributorDashboard from "./pages/ContributorDashboard";
-import Contact from "./pages/Contact";
-import CareerTestPage from "./pages/CareerTestPage";
-
-import ProtectedRoute from "./components/ProtectedRoute";
-
-function HomePage() {
-  const navigate = useNavigate();
-  return (
-    <div className="app">
-      <div className="main-section">
-        <div className="left-content">
-          <h1>Find Your Perfect Career Path</h1>
-          <p>Discover your strengths and unlock your potential!</p>
-          <button className="cta-button" onClick={() => navigate("/explore")}>
-            Get Started
-          </button>
-        </div>
-        <div className="right-model">
-          <StudentModel />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function App() {
   return (
@@ -52,7 +29,8 @@ function App() {
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/quiz/:role" element={<QuizPage />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/career" element={<CareerTestPage />} /> {/* Fixed path */}
+        <Route path="/career" element={<CareerTestPage />} />
+        <Route path="/programs" element={<Programs />} />
         <Route
           path="/dashboard/student"
           element={
