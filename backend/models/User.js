@@ -6,12 +6,17 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: ["student", "mentor", "contributor", "admin"], // enforce allowed roles
+    enum: ["student", "mentor", "contributor", "admin"],
     default: "student"
-    },
-  quizAnswers:{
-    type:Object,
-    default:{}
+  },
+  quizAnswers: {
+    type: Object,
+    default: {}
+  },
+  // ✅ Add this line
+  tags: {
+    type: [String],
+    default: []
   }
 });
 

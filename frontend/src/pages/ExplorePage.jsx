@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import "./ExplorePage.css";
 
 function ExplorePage() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const tagFromURL = queryParams.get("tag");
+
   const [careers, setCareers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(tagFromURL || "");
 
   useEffect(() => {
     axios
@@ -16,6 +21,12 @@ function ExplorePage() {
         console.error("Error fetching careers:", error);
       });
   }, []);
+
+  useEffect(() => {
+    if (tagFromURL) {
+      setSearchTerm(tagFromURL);
+    }
+  }, [tagFromURL]);
 
   const filteredCareers = careers.filter((career) => {
     if (!career || !career.title) return false;

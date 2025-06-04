@@ -1,3 +1,4 @@
+// src/pages/QuizPage.jsx
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,7 +9,7 @@ const QuizPage = () => {
   const [quizData, setQuizData] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedOption, setSelectedOption] = useState([]);
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
   const [customInput, setCustomInput] = useState("");
 
@@ -26,7 +27,6 @@ const QuizPage = () => {
         alert("Unable to load quiz. Please try again.");
       }
     };
-
     fetchQuiz();
   }, [role]);
 
@@ -35,7 +35,6 @@ const QuizPage = () => {
 
   const handleOptionClick = (idx) => {
     const isOther = quizData[currentStep].options[idx].toLowerCase().includes("other");
-
     if (isMultiSelect) {
       if (selectedOption.includes(idx)) {
         setSelectedOption(selectedOption.filter(i => i !== idx));
@@ -43,38 +42,36 @@ const QuizPage = () => {
         setSelectedOption([...selectedOption, idx]);
       }
     } else {
-      setSelectedOption([idx]); // make it an array for consistency
+      setSelectedOption([idx]);
     }
-
-    if (isOther) {
-      setCustomInput(""); // Reset input
-    }
+    if (isOther) setCustomInput("");
   };
 
   const handleNext = async () => {
     if (selectedOption.length === 0) return;
 
     let selectedAnswers = selectedOption.map(i => currentQuestion.options[i]);
-
-    // ✅ Append custom input if "Other" was selected
     const includesOther = selectedAnswers.some(ans => ans.toLowerCase().includes("other"));
     if (includesOther && customInput.trim()) {
       selectedAnswers = selectedAnswers.filter(ans => !ans.toLowerCase().includes("other"));
       selectedAnswers.push(customInput.trim());
     }
 
-    const updatedAnswers = [...answers, selectedAnswers];
-    setAnswers(updatedAnswers);
+    const updated = {
+      ...answers,
+      [currentQuestion.question]: selectedAnswers,
+    };
+
+    setAnswers(updated);
 
     if (currentStep < quizData.length - 1) {
       setCurrentStep(currentStep + 1);
       setSelectedOption([]);
-      setCustomInput(""); // reset for next question
+      setCustomInput("");
     } else {
       try {
         const token = localStorage.getItem("token");
-        const flattened = updatedAnswers.flat();
-        await axios.patch("http://localhost:5000/api/user/quiz", { answers: flattened }, {
+        await axios.patch("http://localhost:5000/api/user/quiz", { answers: updated }, {
           headers: { Authorization: token },
         });
         navigate(`/dashboard/${role}`);
